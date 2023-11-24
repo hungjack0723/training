@@ -16,7 +16,8 @@
     "express-rate-limit": "^7.1.4",
     "node-fetch": "^2.6.9",
     "swagger-ui-express": "^5.0.0",
-    "tsoa": "^4.0.0"
+    "tsoa": "^4.0.0",
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",

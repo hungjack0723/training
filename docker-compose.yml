@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+ api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file: .env
+    environment:
+      PORT: ${PORT}
+    command: npm run start
+    ports:
+      - 8080:3000
+    volumes:
+      - .:/usr/app

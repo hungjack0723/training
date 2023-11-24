@@ -1,8 +1,10 @@
 import http from 'http'
+import dotenv from 'dotenv'
 import app from './app'
 
+dotenv.config({ path: '.env' })
+const PORT = process.env.PORT
 
-const PORT = process.env.PORT || 3000
 // Start app server
 http
   .createServer(app)
