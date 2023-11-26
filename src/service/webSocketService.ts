@@ -1,6 +1,7 @@
 import { MinuteOHLC, Trade, cleanOldOhlcData, updateOhlcData, updateTimestamps } from '../dto/webSocketService.dto'
 import dayjs from 'dayjs'
 import { connectToWebSocket } from '../util/webSocket'
+import logger from '../util/logger'
 
 // ohlc
 let ohlcData: Record<string, MinuteOHLC[]> = {}
@@ -10,7 +11,7 @@ let pairTimestamps: Record<string, number[]> = {}
 const bitmapWs = connectToWebSocket(
   'wss://ws.bitstamp.net',
   () => {
-    console.log('WebSocket connection opened.')
+    logger.info('WebSocket connection opened.')
     subscribeToCurrencyPairs(['BTCUSD', 'ETHUSD', 'XRPUSD'])
   },
   (message) => {
@@ -20,21 +21,21 @@ const bitmapWs = connectToWebSocket(
     }
   },
   () => {
-    console.log('WebSocket connection closed.')
+    logger.info('WebSocket connection closed.')
   }
 )
 
 export const subscribeToCurrencyPairs = (pairs: string[]) => {
   pairs.forEach((pair) => {
       bitmapWs.send(JSON.stringify({ event: 'bts:subscribe', data: { channel: `live_trades_${pair.toLowerCase()}` } }))
-      console.log(`Subscribed to ${pair}`)
+      logger.info(`Subscribed to ${pair}`)
   })
 }
 
 export const unsubscribeFromCurrencyPairs = (pairs: string[]) => {
   pairs.forEach((pair) => {
       bitmapWs.send(JSON.stringify({ event: 'bts:unsubscribe', data: { channel: `live_trades_${pair.toLowerCase()}` } }))
-      console.log(`Unsubscribed from ${pair}`)
+      logger.info(`Unsubscribed from ${pair}`)
   })
 }
 
@@ -45,20 +46,19 @@ const processBitstampMessage = (parsedMessage: any) => {
     const { price } = data
     const pair = parsedMessage.channel?.split('_')[2]
 
-    console.log(`Received message from Bitstamp. ${pair}: ${price}`)
+    logger.info(`Received message from Bitstamp. ${pair}: ${price}`)
 
     // update OHLC data
     const timestamp = parseInt(data.timestamp, 10)
     const ohlc = updateMinuteOHLC([{ pair, timestamp, price }], ohlcData, pairTimestamps)
 
     cleanOldOhlcData({ pair, currentTimestamp: timestamp })
-    console.log(ohlc)
+    logger.info(JSON.stringify(ohlc))
   }
 }
 
 const updateMinuteOHLC = (trades: Trade[], currentOhlcData: Record<string, MinuteOHLC[]>, pairTimestamps: Record<string, number[]>) => {
-  console.info(new Date())
-  console.log(trades)
+  logger.info(`updateMinuteOHLC service: ${JSON.stringify(trades)}`)
 
 const updateTimestamps = (dto: updateTimestamps) => {
     if (!pairTimestamps[dto.pair]) {
@@ -67,11 +67,10 @@ const updateTimestamps = (dto: updateTimestamps) => {
 
     const currentDate = pairTimestamps[dto.pair]?.[0] || dayjs().unix()
     const timeDifferenceInSeconds = dto.timestamp - currentDate
-    console.log('timeDifferenceInSeconds', timeDifferenceInSeconds)
 
+    // 超過60秒，清空數組
     if (timeDifferenceInSeconds > 60) {
       pairTimestamps[dto.pair] = []
-      console.log('超過 60 秒，清空數組')
     } else {
       pairTimestamps[dto.pair].push(dto.timestamp)
     }
@@ -110,13 +109,13 @@ const updateOhlcData = (dto: updateOhlcData) => {
 
 
 const cleanOldOhlcData = (dto: cleanOldOhlcData) => {
+  logger.info(`cleanOldOhlcData service: ${JSON.stringify(dto)}`)
   // 檢查是否存在，不存在則初始化
   if (!ohlcData[dto.pair]) {
     ohlcData[dto.pair] = []
     return
   }
   const cutoffTimestamp = dto.currentTimestamp - (15 * 60) // 15 分鐘前的 timestamp
-  console.log('cutoffTimestamp', cutoffTimestamp)
   ohlcData[dto.pair] = ohlcData[dto.pair].filter((data) => data.timestamp >= cutoffTimestamp)
 }
 

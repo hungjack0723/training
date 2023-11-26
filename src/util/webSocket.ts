@@ -1,4 +1,5 @@
 import WebSocket from 'ws'
+import logger from './logger'
 
 export const connectToWebSocket = (
   url: string, 
@@ -12,7 +13,7 @@ export const connectToWebSocket = (
     try {
       onMessage(message)
     } catch (error) {
-      console.error('Error handling message:', error)
+      logger.error('Error handling message:', error)
     }
   })
 

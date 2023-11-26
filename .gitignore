@@ -5,3 +5,6 @@ dist
 # generate by tsoa
 swagger.json
 src/routes/*.ts
+
+# logger
+logs
