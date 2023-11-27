@@ -6,7 +6,6 @@ import WebSocket from 'ws'
 import { RegisterRoutes } from './routes/routes'
 import { limiter, userLimiter } from './rateLimit'
 import { bitmapWs } from './service/webSocketService'
-import logger from './util/logger'
 
 const app = express()
 

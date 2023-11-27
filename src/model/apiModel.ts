@@ -1,7 +1,7 @@
 import { OHLCEntry } from "../dto/webSocketService.dto"
 
 export interface apiSuccessResponseModel {
-    result: number[]
+  result: number[]
 }
 
 export interface webSocketApiSuccessResponseModel {

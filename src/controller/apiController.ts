@@ -1,4 +1,4 @@
-import { Controller, Route, Query, Tags, Get, Response, Path } from 'tsoa'
+import { Controller, Route, Query, Tags, Get, Response } from 'tsoa'
 import { fetchData } from '../service/apiService'
 import { CurrencyPair, UnexpectedErrorResponseModel, allowedCurrencyPairs, apiSuccessResponseModel, webSocketApiSuccessResponseModel } from '../model/apiModel'
 import { getOhlcData } from '../service/webSocketService'
@@ -22,7 +22,7 @@ export class DataController extends Controller {
    * @summary 取得1 minute OHLC資料
    */
    @Get('/streaming')
-   @Response<apiSuccessResponseModel>(200)
+   @Response<webSocketApiSuccessResponseModel>(200)
    @Response<UnexpectedErrorResponseModel>(500)
    public getOhlcData(
       @Query('currencyPairs') currencyPairs: CurrencyPair,
