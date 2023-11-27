@@ -5,7 +5,7 @@ export interface apiSuccessResponseModel {
 }
 
 export interface webSocketApiSuccessResponseModel {
-  result: OHLCEntry[]
+  result: OHLCEntry
 }
 
 export interface UnexpectedErrorResponseModel {

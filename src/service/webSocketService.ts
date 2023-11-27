@@ -122,7 +122,7 @@ const cleanOldOhlcData = (dto: cleanOldOhlcData) => {
 }
 
 export const getOhlcData = (pair: string) => {
-  const data = ohlcData[pair] || []
+  const data = ohlcData[pair][ohlcData[pair].length - 1] || []
   return { result: data } 
 }
 
