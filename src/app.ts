@@ -5,7 +5,7 @@ import swaggerUi from 'swagger-ui-express'
 import WebSocket from 'ws'
 import { RegisterRoutes } from './routes/routes'
 import { limiter, userLimiter } from './rateLimit'
-import { subscribeToCurrencyPairs } from './service/webSocketService'
+import { bitmapWs } from './service/webSocketService'
 import logger from './util/logger'
 
 const app = express()
@@ -25,9 +25,8 @@ const server = http.createServer(app)
 const wss = new WebSocket.Server({ server, path: '/streaming' })
 
 wss.on('connection', (ws) => {
-  logger.info('WebSocket client connected')
   ws.on('message', () => {
-  subscribeToCurrencyPairs(['BTCUSD', 'ETHUSD', 'XRPUSD'])
+    bitmapWs
   })
 })
 

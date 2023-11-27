@@ -1,18 +1,20 @@
-import { MinuteOHLC, Trade, cleanOldOhlcData, updateOhlcData, updateTimestamps } from '../dto/webSocketService.dto'
+import { OHLCEntry, Trade, cleanOldOhlcData, updateOhlcData, updateTimestamps } from '../dto/webSocketService.dto'
 import dayjs from 'dayjs'
 import { connectToWebSocket } from '../util/webSocket'
 import logger from '../util/logger'
 
 // ohlc
-let ohlcData: Record<string, MinuteOHLC[]> = {}
+let ohlcData: Record<string, OHLCEntry[]> = {}
 // timestamp
 let pairTimestamps: Record<string, number[]> = {}
+// 特定10個currency Pairs 
+let currencyPairs = ['btcusd', 'btceur', 'btcgbp', 'btcpax', 'gbpusd', 'eurusd', 'xrpusd', 'xrpeur', 'xrpbtc', 'xrpgbp']
 
-const bitmapWs = connectToWebSocket(
+export const bitmapWs = connectToWebSocket(
   'wss://ws.bitstamp.net',
   () => {
     logger.info('WebSocket connection opened.')
-    subscribeToCurrencyPairs(['BTCUSD', 'ETHUSD', 'XRPUSD'])
+    subscribeToCurrencyPairs(currencyPairs)
   },
   (message) => {
     const parsedMessage = JSON.parse(message.toString())
@@ -57,7 +59,7 @@ const processBitstampMessage = (parsedMessage: any) => {
   }
 }
 
-const updateMinuteOHLC = (trades: Trade[], currentOhlcData: Record<string, MinuteOHLC[]>, pairTimestamps: Record<string, number[]>) => {
+const updateMinuteOHLC = (trades: Trade[], currentOhlcData: Record<string, OHLCEntry[]>, pairTimestamps: Record<string, number[]>) => {
   logger.info(`updateMinuteOHLC service: ${JSON.stringify(trades)}`)
 
 const updateTimestamps = (dto: updateTimestamps) => {
@@ -117,6 +119,11 @@ const cleanOldOhlcData = (dto: cleanOldOhlcData) => {
   }
   const cutoffTimestamp = dto.currentTimestamp - (15 * 60) // 15 分鐘前的 timestamp
   ohlcData[dto.pair] = ohlcData[dto.pair].filter((data) => data.timestamp >= cutoffTimestamp)
+}
+
+export const getOhlcData = (pair: string) => {
+  const data = ohlcData[pair] || []
+  return { result: data } 
 }
 
 

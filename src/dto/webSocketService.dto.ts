@@ -1,27 +1,34 @@
-interface OHLCEntry {
+export interface OHLCEntry {
+    /**
+     * 時間戳記
+     */
     timestamp: number
+    /**
+     * 每分鐘的第一筆成交價格
+     */
     open: number
+    /**
+     * 每分鐘的最高成交價格
+     */
     high: number
+     /**
+     * 每分鐘的最低成交價格
+     */
     low: number
+     /**
+     * 每分鐘的最後一筆成交價格
+     */
     close: number
-  }
+}
   
 export interface OHLCData {
     [pair: string]: OHLCEntry[]
 }
 
 export interface Trade {
-    pair: string;
-    timestamp: number;
-    price: number;
-}
-
-export interface MinuteOHLC {
+    pair: string
     timestamp: number
-    open: number
-    high: number
-    low: number
-    close: number
+    price: number
 }
 
 export interface cleanOldOhlcData {
